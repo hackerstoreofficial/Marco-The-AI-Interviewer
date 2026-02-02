@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Marco AI Interview - System Permissions">
+    <title>System Permissions | Marco AI Interview</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Background Decorations -->
+        <div class="bg-blob bg-blob-1"></div>
+        <div class="bg-blob bg-blob-2"></div>
+
+        <!-- Progress Indicators -->
+        <div class="progress-dots">
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot active"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-card">
+            <div style="max-width: 900px; margin: 0 auto;">
+                <h1 class="text-center mb-md">System Setup</h1>
+                <p class="text-center text-muted mb-xl">
+                    <em>Grant permissions and configure your AI interviewer</em>
+                </p>
+
+                <!-- Permissions Section -->
+                <div class="permissions-grid mb-xl">
+                    <!-- Camera Permission -->
+                    <div class="permission-card" id="cameraCard">
+                        <div class="permission-icon">
+                            <img src="icons/camera.svg" alt="Camera" width="40" height="40">
+                        </div>
+                        <h3>Camera</h3>
+                        <p class="text-muted permission-status" id="cameraStatus">Not granted</p>
+                        <button class="btn btn-secondary btn-sm" id="cameraBtn">Grant Access</button>
+                    </div>
+
+                    <!-- Microphone Permission -->
+                    <div class="permission-card" id="micCard">
+                        <div class="permission-icon">
+                            <img src="icons/mic.svg" alt="Microphone" width="40" height="40">
+                        </div>
+                        <h3>Microphone</h3>
+                        <p class="text-muted permission-status" id="micStatus">Not granted</p>
+                        <button class="btn btn-secondary btn-sm" id="micBtn">Grant Access</button>
+                    </div>
+
+                    <!-- Screen Share Permission -->
+                    <div class="permission-card" id="screenCard">
+                        <div class="permission-icon">
+                            <img src="icons/screen.svg" alt="Screen" width="40" height="40">
+                        </div>
+                        <h3>Screen Share</h3>
+                        <p class="text-muted permission-status" id="screenStatus">Not granted</p>
+                        <button class="btn btn-secondary btn-sm" id="screenBtn">Share Screen</button>
+                    </div>
+                </div>
+
+                <!-- API Configuration -->
+                <div class="api-config-section mb-xl">
+                    <h2 class="mb-md">AI Configuration</h2>
+                    <p class="text-muted mb-md">Select your preferred AI provider and enter your API key.</p>
+
+                    <div class="form-group">
+                        <label for="apiProvider" class="form-label">AI Provider *</label>
+                        <select id="apiProvider" class="form-input" required>
+                            <option value="">Select a provider</option>
+                            <option value="openai">OpenAI (GPT-3.5/4)</option>
+                            <option value="gemini">Google Gemini</option>
+                            <option value="groq">Groq</option>
+                            <option value="openrouter">OpenRouter</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="apiKey" class="form-label">API Key *</label>
+                        <input type="password" id="apiKey" class="form-input" placeholder="sk-..." required>
+                        <p class="text-muted" style="font-size: 0.875rem; margin-top: 0.5rem;">
+                            Your API key is stored locally and never shared.
+                        </p>
+                    </div>
+
+                    <button class="btn btn-secondary" id="testApiBtn" disabled>
+                        Test Connection
+                    </button>
+                    <p class="text-error hidden" id="apiError"></p>
+                    <p class="hidden" id="apiSuccess" style="color: var(--sage-dark); margin-top: 0.5rem;">
+                        ✓ Connection successful!
+                    </p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex-center" style="gap: var(--spacing-md);">
+                    <button type="button" class="btn btn-secondary" id="backBtn">
+                        ← Back
+                    </button>
+                    <button type="button" class="btn btn-primary" id="startInterviewBtn" disabled>
+                        Start Interview →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load API Helper -->
+    <script src="api.js"></script>
+
+    <script>
+        let permissionsGranted = {
+            camera: false,
+            microphone: false,
+            screen: false
+        };
+        let apiTested = false;
+
+        // Camera Permission
+        document.getElementById('cameraBtn').addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                permissionsGranted.camera = true;
+                updatePermissionCard('camera', true);
+                stream.getTracks().forEach(track => track.stop());
+            } catch (err) {
+                alert('Camera access denied. Please allow camera access to continue.');
+            }
+        });
+
+        // Microphone Permission
+        document.getElementById('micBtn').addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                permissionsGranted.microphone = true;
+                updatePermissionCard('mic', true);
+                stream.getTracks().forEach(track => track.stop());
+            } catch (err) {
+                alert('Microphone access denied. Please allow microphone access to continue.');
+            }
+        });
+
+        // Screen Share Permission
+        document.getElementById('screenBtn').addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { displaySurface: 'monitor' }
+                });
+
+                // Check if entire screen is shared (not just tab/window)
+                const track = stream.getVideoTracks()[0];
+                const settings = track.getSettings();
+
+                if (settings.displaySurface !== 'monitor') {
+                    alert('⚠️ You must share your ENTIRE SCREEN, not just a tab or window. Please try again.');
+                    stream.getTracks().forEach(track => track.stop());
+                    return;
+                }
+
+                permissionsGranted.screen = true;
+                updatePermissionCard('screen', true);
+                stream.getTracks().forEach(track => track.stop());
+            } catch (err) {
+                alert('Screen sharing denied. Please allow screen sharing to continue.');
+            }
+        });
+
+        function updatePermissionCard(type, granted) {
+            const card = document.getElementById(`${type}Card`);
+            const status = document.getElementById(`${type}Status`);
+            const btn = document.getElementById(`${type}Btn`);
+
+            if (granted) {
+                card.classList.add('granted');
+                status.textContent = '✓ Granted';
+                status.style.color = 'var(--sage-dark)';
+                btn.disabled = true;
+                btn.textContent = 'Granted';
+            }
+
+            checkAllPermissions();
+        }
+
+        function checkAllPermissions() {
+            const allGranted = permissionsGranted.camera &&
+                permissionsGranted.microphone &&
+                permissionsGranted.screen;
+
+            if (allGranted && apiTested) {
+                document.getElementById('startInterviewBtn').disabled = false;
+            }
+        }
+
+        // API Configuration
+        const apiProvider = document.getElementById('apiProvider');
+        const apiKey = document.getElementById('apiKey');
+        const testApiBtn = document.getElementById('testApiBtn');
+
+        function checkApiFields() {
+            testApiBtn.disabled = !(apiProvider.value && apiKey.value);
+        }
+
+        apiProvider.addEventListener('change', checkApiFields);
+        apiKey.addEventListener('input', checkApiFields);
+
+        testApiBtn.addEventListener('click', async () => {
+            const apiError = document.getElementById('apiError');
+            const apiSuccess = document.getElementById('apiSuccess');
+
+            apiError.classList.add('hidden');
+            apiSuccess.classList.add('hidden');
+            testApiBtn.disabled = true;
+            testApiBtn.textContent = 'Testing...';
+
+            try {
+                // Test backend connection first
+                await api.healthCheck();
+
+                // API key will be validated when starting interview
+                // For now, just check it's not empty
+                if (apiKey.value.length > 10) {
+                    apiSuccess.classList.remove('hidden');
+                    apiTested = true;
+                    testApiBtn.textContent = '✓ Connected';
+
+                    // Store API config
+                    sessionStorage.setItem('apiConfig', JSON.stringify({
+                        provider: apiProvider.value,
+                        key: apiKey.value
+                    }));
+
+                    checkAllPermissions();
+                } else {
+                    throw new Error('API key appears to be invalid');
+                }
+            } catch (error) {
+                console.error('API test error:', error);
+
+                if (error.message.includes('Failed to fetch')) {
+                    apiError.textContent = 'Backend server is not running. Please start the server.';
+                } else {
+                    apiError.textContent = `Error: ${error.message}`;
+                }
+                apiError.classList.remove('hidden');
+                testApiBtn.disabled = false;
+                testApiBtn.textContent = 'Test Connection';
+            }
+        });
+
+        // Navigation
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.location.href = '/static/profile.html';
+        });
+
+        document.getElementById('startInterviewBtn').addEventListener('click', () => {
+            // Mark permissions as granted in sessionStorage
+            sessionStorage.setItem('permissionsGranted', 'true');
+            window.location.href = '/static/interview.html';
+        });
+    </script>
+
+    <style>
+        .permissions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .permission-card {
+            background: var(--sage-light);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            text-align: center;
+            transition: all var(--transition-medium);
+        }
+
+        .permission-card.granted {
+            background: var(--white);
+            border: 2px solid var(--sage-dark);
+        }
+
+        .permission-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--white);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--spacing-sm);
+            color: var(--sage-dark);
+        }
+
+        .permission-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .permission-status {
+            font-size: 0.9rem;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .api-config-section {
+            background: var(--sage-light);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+        }
+    </style>
+</body>
+
+</html>

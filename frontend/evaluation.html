@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Marco AI Interview - Evaluation & Feedback">
+    <title>Evaluation & Feedback | Marco AI Interview</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Background Decorations -->
+        <div class="bg-blob bg-blob-1"></div>
+        <div class="bg-blob bg-blob-2"></div>
+
+        <!-- Progress Indicators -->
+        <div class="progress-dots">
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot active"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-card">
+            <div style="max-width: 1000px; margin: 0 auto;">
+                <h1 class="text-center mb-sm">Interview Complete! 🎉</h1>
+                <p class="text-center text-muted mb-xl">
+                    <em>Here's your comprehensive performance analysis</em>
+                </p>
+
+                <!-- Overall Score -->
+                <div class="score-card mb-xl">
+                    <div class="score-circle">
+                        <svg width="200" height="200" viewBox="0 0 200 200">
+                            <circle cx="100" cy="100" r="90" fill="none" stroke="var(--sage-light)" stroke-width="12" />
+                            <circle id="scoreCircle" cx="100" cy="100" r="90" fill="none" stroke="var(--sage-dark)"
+                                stroke-width="12" stroke-dasharray="565.48" stroke-dashoffset="565.48"
+                                transform="rotate(-90 100 100)" stroke-linecap="round" />
+                        </svg>
+                        <div class="score-text">
+                            <div class="score-number" id="overallScore">0</div>
+                            <div class="score-label">Overall Score</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Scores -->
+                <div class="scores-grid mb-xl">
+                    <div class="score-item">
+                        <h3>Technical Accuracy</h3>
+                        <div class="score-bar">
+                            <div class="score-bar-fill" id="technicalBar" style="width: 0%"></div>
+                        </div>
+                        <p class="score-value" id="technicalScore">0/100</p>
+                    </div>
+
+                    <div class="score-item">
+                        <h3>Clarity & Communication</h3>
+                        <div class="score-bar">
+                            <div class="score-bar-fill" id="clarityBar" style="width: 0%"></div>
+                        </div>
+                        <p class="score-value" id="clarityScore">0/100</p>
+                    </div>
+
+                    <div class="score-item">
+                        <h3>Relevance & Depth</h3>
+                        <div class="score-bar">
+                            <div class="score-bar-fill" id="relevanceBar" style="width: 0%"></div>
+                        </div>
+                        <p class="score-value" id="relevanceScore">0/100</p>
+                    </div>
+                </div>
+
+                <!-- Interview Stats -->
+                <div class="stats-section mb-xl">
+                    <h2 class="mb-md">Interview Statistics</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-value" id="timeSpent">--</div>
+                            <div class="stat-label">Time Spent</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon">💬</div>
+                            <div class="stat-value" id="questionsAnswered">--</div>
+                            <div class="stat-label">Questions Answered</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon">👁️</div>
+                            <div class="stat-value" id="gazeViolations">--</div>
+                            <div class="stat-label">Gaze Violations</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon">🔄</div>
+                            <div class="stat-value" id="tabSwitches">--</div>
+                            <div class="stat-label">Tab Switches</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Feedback -->
+                <div class="feedback-section mb-xl">
+                    <h2 class="mb-md">AI Feedback</h2>
+
+                    <!-- Strengths -->
+                    <div class="feedback-box strengths-box mb-md">
+                        <h3 class="mb-sm">✨ Strengths</h3>
+                        <ul id="strengthsList">
+                            <li>Analyzing your responses...</li>
+                        </ul>
+                    </div>
+
+                    <!-- Areas for Improvement -->
+                    <div class="feedback-box improvements-box mb-md">
+                        <h3 class="mb-sm">📈 Areas for Improvement</h3>
+                        <ul id="improvementsList">
+                            <li>Analyzing your responses...</li>
+                        </ul>
+                    </div>
+
+                    <!-- Detailed Comments -->
+                    <div class="feedback-box comments-box">
+                        <h3 class="mb-sm">💡 Detailed Analysis</h3>
+                        <p id="detailedComments">
+                            Our AI is analyzing your interview performance. This comprehensive feedback
+                            will help you understand your strengths and identify areas for growth...
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex-center" style="gap: var(--spacing-md);">
+                    <button class="btn btn-secondary" id="downloadReportBtn">
+                        📄 Download Report
+                    </button>
+                    <button class="btn btn-primary" id="backHomeBtn">
+                        🏠 Back to Home
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load API Helper -->
+    <script src="api.js"></script>
+
+    <script>
+        // Animate scores
+        function animateScore(elementId, targetValue, duration = 2000) {
+            const element = document.getElementById(elementId);
+            const start = 0;
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const current = Math.floor(start + (targetValue - start) * progress);
+
+                element.textContent = current;
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        function animateCircle(targetScore) {
+            const circle = document.getElementById('scoreCircle');
+            const circumference = 565.48;
+            const offset = circumference - (targetScore / 100) * circumference;
+
+            setTimeout(() => {
+                circle.style.transition = 'stroke-dashoffset 2s ease';
+                circle.style.strokeDashoffset = offset;
+            }, 300);
+        }
+
+        function animateBar(barId, scoreId, targetValue) {
+            const bar = document.getElementById(barId);
+            const scoreElement = document.getElementById(scoreId);
+
+            setTimeout(() => {
+                bar.style.transition = 'width 1.5s ease';
+                bar.style.width = targetValue + '%';
+            }, 500);
+
+            scoreElement.textContent = `${targetValue}/100`;
+        }
+
+        // Load and display evaluation
+        window.addEventListener('load', async () => {
+            try {
+                // Get session ID
+                const sessionId = sessionStorage.getItem('session_id');
+
+                if (!sessionId) {
+                    alert('No interview session found. Redirecting...');
+                    window.location.href = '/';
+                    return;
+                }
+
+                // Show loading state
+                document.getElementById('detailedComments').textContent =
+                    'Generating AI-powered evaluation... This may take 30-60 seconds.';
+
+                // Generate evaluation (this takes time)
+                console.log('Generating evaluation for session:', sessionId);
+                await api.generateEvaluation(sessionId);
+
+                // Fetch evaluation results
+                const evaluation = await api.getEvaluation(sessionId);
+
+                console.log('Evaluation received:', evaluation);
+
+                // Overall score
+                animateScore('overallScore', evaluation.overall_score || 0);
+                animateCircle(evaluation.overall_score || 0);
+
+                // Detailed scores
+                animateBar('technicalBar', 'technicalScore', evaluation.technical_score || 0);
+                animateBar('clarityBar', 'clarityScore', evaluation.clarity_score || 0);
+                animateBar('relevanceBar', 'relevanceScore', evaluation.relevance_score || 0);
+
+                // Interview stats (from stored results)
+                const interviewResults = JSON.parse(sessionStorage.getItem('interviewResults') || '{}');
+                const timeSpent = interviewResults.timeSpent || 1800;
+                const minutes = Math.floor(timeSpent / 60);
+                const seconds = timeSpent % 60;
+                document.getElementById('timeSpent').textContent = `${minutes}m ${seconds}s`;
+                document.getElementById('questionsAnswered').textContent = interviewResults.answers?.length || 10;
+                document.getElementById('gazeViolations').textContent = interviewResults.gazeViolations || 0;
+                document.getElementById('tabSwitches').textContent = interviewResults.tabSwitches || 0;
+
+                // Strengths
+                const strengthsList = document.getElementById('strengthsList');
+                strengthsList.innerHTML = '';
+                if (evaluation.strengths && evaluation.strengths.length > 0) {
+                    evaluation.strengths.forEach(strength => {
+                        const li = document.createElement('li');
+                        li.textContent = strength;
+                        strengthsList.appendChild(li);
+                    });
+                } else {
+                    strengthsList.innerHTML = '<li>No specific strengths identified</li>';
+                }
+
+                // Improvements
+                const improvementsList = document.getElementById('improvementsList');
+                improvementsList.innerHTML = '';
+                if (evaluation.improvements && evaluation.improvements.length > 0) {
+                    evaluation.improvements.forEach(improvement => {
+                        const li = document.createElement('li');
+                        li.textContent = improvement;
+                        improvementsList.appendChild(li);
+                    });
+                } else {
+                    improvementsList.innerHTML = '<li>No specific improvements suggested</li>';
+                }
+
+                // Detailed feedback
+                document.getElementById('detailedComments').textContent =
+                    evaluation.detailed_analysis || 'No detailed analysis available.';
+
+            } catch (error) {
+                console.error('Evaluation error:', error);
+
+                // Show error message without fallback
+                document.getElementById('detailedComments').innerHTML = `
+                    <div style="color: #dc2626; padding: 1rem; background: #fee2e2; border-radius: 8px;">
+                        <strong>⚠️ Error loading evaluation:</strong><br>
+                        ${error.message}<br><br>
+                        <em>Please ensure your API key is valid and try refreshing the page.</em>
+                    </div>
+                `;
+
+                // Show error in scores
+                document.getElementById('overallScore').textContent = '--';
+                document.getElementById('technicalScore').textContent = '--/100';
+                document.getElementById('clarityScore').textContent = '--/100';
+                document.getElementById('relevanceScore').textContent = '--/100';
+
+                document.getElementById('strengthsList').innerHTML = '<li>Unable to load evaluation data</li>';
+                document.getElementById('improvementsList').innerHTML = '<li>Unable to load evaluation data</li>';
+            }
+        });
+
+        // Download report
+        document.getElementById('downloadReportBtn').addEventListener('click', () => {
+            const candidateProfile = JSON.parse(sessionStorage.getItem('candidateProfile') || '{}');
+            const overallScore = document.getElementById('overallScore').textContent;
+            const technicalScore = document.getElementById('technicalScore').textContent;
+            const clarityScore = document.getElementById('clarityScore').textContent;
+            const relevanceScore = document.getElementById('relevanceScore').textContent;
+
+            const reportContent = `
+MARCO AI INTERVIEW SIMULATOR - EVALUATION REPORT
+================================================
+
+Candidate: ${candidateProfile.name || 'N/A'}
+Position: ${candidateProfile.target_position || 'N/A'}
+Date: ${new Date().toLocaleDateString()}
+
+OVERALL SCORE: ${overallScore}/100
+
+DETAILED SCORES:
+- Technical Accuracy: ${technicalScore}
+- Clarity & Communication: ${clarityScore}
+- Relevance & Depth: ${relevanceScore}
+
+INTERVIEW STATISTICS:
+- Time Spent: ${document.getElementById('timeSpent').textContent}
+- Questions Answered: ${document.getElementById('questionsAnswered').textContent}
+- Gaze Violations: ${document.getElementById('gazeViolations').textContent}
+- Tab Switches: ${document.getElementById('tabSwitches').textContent}
+
+STRENGTHS:
+${Array.from(document.getElementById('strengthsList').children).map((li, i) => `${i + 1}. ${li.textContent}`).join('\n')}
+
+AREAS FOR IMPROVEMENT:
+${Array.from(document.getElementById('improvementsList').children).map((li, i) => `${i + 1}. ${li.textContent}`).join('\n')}
+
+DETAILED ANALYSIS:
+${document.getElementById('detailedComments').textContent}
+
+---
+Generated by Marco AI Interview Simulator
+            `.trim();
+
+            const blob = new Blob([reportContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Marco_Interview_Report_${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // Back to home
+        document.getElementById('backHomeBtn').addEventListener('click', () => {
+            sessionStorage.clear();
+            window.location.href = '/';
+        });
+    </script>
+
+    <style>
+        .score-card {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .score-circle {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+
+        .score-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .score-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--sage-dark);
+            font-family: var(--font-sans);
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: var(--gray-muted);
+            margin-top: -0.5rem;
+        }
+
+        .scores-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .score-item h3 {
+            font-size: 1rem;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .score-bar {
+            width: 100%;
+            height: 12px;
+            background: var(--sage-light);
+            border-radius: var(--radius-pill);
+            overflow: hidden;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--sage-dark), var(--sage-medium));
+            border-radius: var(--radius-pill);
+            transition: width 1.5s ease;
+        }
+
+        .score-value {
+            font-weight: 600;
+            color: var(--slate-text);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .stat-card {
+            background: var(--sage-light);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--slate-text);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--gray-muted);
+        }
+
+        .feedback-box {
+            background: var(--white);
+            border-left: 4px solid var(--sage-dark);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+        }
+
+        .strengths-box {
+            border-left-color: var(--sage-dark);
+            background: var(--sage-light);
+        }
+
+        .improvements-box {
+            border-left-color: #f59e0b;
+            background: #fef3c7;
+        }
+
+        .comments-box {
+            border-left-color: var(--slate-text);
+            background: var(--sage-light);
+        }
+
+        .feedback-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feedback-box li {
+            padding: var(--spacing-xs) 0;
+            padding-left: var(--spacing-md);
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .feedback-box li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .strengths-box li::before {
+            color: var(--sage-dark);
+        }
+
+        .improvements-box li::before {
+            color: #f59e0b;
+        }
+    </style>
+</body>
+
+</html>

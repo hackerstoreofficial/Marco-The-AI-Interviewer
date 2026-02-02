@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Marco AI Interview Simulator - Guidelines and Compliance">
+    <title>Guidelines & Compliance | Marco AI Interview</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Background Decorations -->
+        <div class="bg-blob bg-blob-1"></div>
+        <div class="bg-blob bg-blob-2"></div>
+
+        <!-- Progress Indicators -->
+        <div class="progress-dots">
+            <div class="progress-dot active"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-card">
+            <div style="max-width: 900px; margin: 0 auto;">
+                <h1 class="text-center mb-md">Welcome to Marco</h1>
+                <p class="text-center text-muted mb-xl">
+                    <em>Your AI-powered interview companion</em>
+                </p>
+
+                <h2 class="mb-md">Interview Guidelines</h2>
+                <p class="mb-lg">
+                    Before we begin, please carefully read and acknowledge the following guidelines.
+                    These rules ensure a fair and secure interview environment.
+                </p>
+
+                <!-- Guidelines List -->
+                <div class="guidelines-list mb-xl">
+                    <div class="guideline-item">
+                        <div class="guideline-icon">
+                            <img src="icons/camera.svg" alt="Camera" width="32" height="32">
+                        </div>
+                        <div class="guideline-content">
+                            <h3>Camera Access Required</h3>
+                            <p class="text-muted">
+                                Your camera must remain active throughout the interview.
+                                Our AI proctoring system monitors your presence and focus.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="guideline-item">
+                        <div class="guideline-icon">
+                            <img src="icons/mic.svg" alt="Microphone" width="32" height="32">
+                        </div>
+                        <div class="guideline-content">
+                            <h3>Microphone Access Required</h3>
+                            <p class="text-muted">
+                                Your microphone will be used for voice responses.
+                                Speak clearly and naturally during the interview.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="guideline-item">
+                        <div class="guideline-icon">
+                            <img src="icons/screen.svg" alt="Screen" width="32" height="32">
+                        </div>
+                        <div class="guideline-content">
+                            <h3>Full Screen Sharing Mandatory</h3>
+                            <p class="text-muted">
+                                You must share your <strong>entire screen</strong>, not just a tab or window.
+                                This prevents the use of external aids.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Anti-Cheat Rules -->
+                <div class="warning-box mb-xl">
+                    <h3 class="mb-sm">⚠️ Anti-Cheat Policy</h3>
+                    <ul class="rules-list">
+                        <li><strong>Gaze Tracking:</strong> Looking away from the screen more than <strong>5
+                                times</strong> will auto-terminate the interview.</li>
+                        <li><strong>Tab Switching:</strong> Switching tabs or windows more than <strong>2 times</strong>
+                            will auto-terminate the interview.</li>
+                        <li><strong>No External Aids:</strong> Using notes, search engines, or other resources is
+                            strictly prohibited.</li>
+                        <li><strong>Time Limit:</strong> The interview will last a maximum of <strong>30
+                                minutes</strong>.</li>
+                    </ul>
+                </div>
+
+                <!-- Acknowledgment -->
+                <div class="checkbox-wrapper mb-lg">
+                    <input type="checkbox" id="acknowledge" name="acknowledge">
+                    <label for="acknowledge" class="checkbox-label">
+                        I have read and understood the guidelines above. I agree to comply with all rules
+                        and understand that violations will result in automatic termination of the interview.
+                    </label>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex-center">
+                    <button class="btn btn-primary" id="proceedBtn" disabled>
+                        Proceed to Profile Setup →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enable proceed button when checkbox is checked
+        const acknowledgeCheckbox = document.getElementById('acknowledge');
+        const proceedBtn = document.getElementById('proceedBtn');
+
+        acknowledgeCheckbox.addEventListener('change', function () {
+            proceedBtn.disabled = !this.checked;
+        });
+
+        // Navigate to next page
+        proceedBtn.addEventListener('click', function () {
+            window.location.href = '/static/profile.html';
+        });
+    </script>
+
+    <style>
+        .guidelines-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .guideline-item {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: flex-start;
+        }
+
+        .guideline-icon {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            background: var(--sage-light);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--sage-dark);
+        }
+
+        .guideline-content h3 {
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .guideline-content p {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .warning-box {
+            background: var(--sage-light);
+            border-left: 4px solid var(--sage-dark);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-sm);
+        }
+
+        .warning-box h3 {
+            color: var(--slate-text);
+        }
+
+        .rules-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .rules-list li {
+            padding: var(--spacing-xs) 0;
+            padding-left: var(--spacing-md);
+            position: relative;
+        }
+
+        .rules-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--sage-dark);
+            font-weight: bold;
+        }
+    </style>
+</body>
+
+</html>

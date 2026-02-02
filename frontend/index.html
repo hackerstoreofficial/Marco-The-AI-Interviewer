@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Marco - Intelligent AI Interview Simulator for technical interview practice">
+    <title>Marco - AI Interview Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Background Decorations -->
+        <div class="bg-blob bg-blob-1"></div>
+        <div class="bg-blob bg-blob-2"></div>
+
+        <!-- Main Content -->
+        <div class="content-card text-center">
+            <div style="max-width: 900px; margin: 0 auto; padding: var(--spacing-xl) 0;">
+                <div class="logo-section mb-lg breathe-animation">
+                    <div class="logo-circle">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                            <path d="M2 17l10 5 10-5" />
+                            <path d="M2 12l10 5 10-5" />
+                        </svg>
+                    </div>
+                </div>
+
+                <h1 class="mb-md" style="font-size: 3rem;">Marco</h1>
+                <p class="text-muted mb-lg" style="font-size: 1.25rem;">
+                    <em>Your Intelligent AI Interview Companion</em>
+                </p>
+
+                <p class="mb-xl" style="max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.8;">
+                    Experience a realistic, AI-powered interview simulation designed to help you prepare
+                    for technical interviews. Marco analyzes your resume, asks personalized questions,
+                    and provides comprehensive feedback to help you succeed.
+                </p>
+
+                <!-- Features Grid -->
+                <div class="features-grid mb-xl">
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <h3>AI-Powered</h3>
+                        <p class="text-muted">Dynamic questions based on your resume and experience</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3>Personalized</h3>
+                        <p class="text-muted">Tailored interview experience for your target role</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Detailed Feedback</h3>
+                        <p class="text-muted">Comprehensive analysis with actionable insights</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Secure Proctoring</h3>
+                        <p class="text-muted">Advanced monitoring for authentic practice</p>
+                    </div>
+                </div>
+
+                <!-- CTA Button -->
+                <button class="btn btn-primary" id="startBtn" style="font-size: 1.1rem; padding: 1rem 2.5rem;">
+                    Start Your Interview →
+                </button>
+
+                <p class="text-muted mt-md" style="font-size: 0.875rem;">
+                    Powered by OpenAI, Google Gemini, and Groq
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('startBtn').addEventListener('click', () => {
+            window.location.href = './guidelines.html';
+        });
+    </script>
+
+    <style>
+        .logo-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .logo-circle {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--sage-dark), var(--sage-medium));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            text-align: center;
+        }
+
+        .feature-card {
+            padding: var(--spacing-md);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .feature-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-xs);
+            color: var(--slate-text);
+        }
+
+        .feature-card p {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+    </style>
+</body>
+
+</html>

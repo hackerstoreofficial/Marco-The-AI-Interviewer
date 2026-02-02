@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Marco AI Interview - Candidate Profile Setup">
+    <title>Profile Setup | Marco AI Interview</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Background Decorations -->
+        <div class="bg-blob bg-blob-1"></div>
+        <div class="bg-blob bg-blob-2"></div>
+
+        <!-- Progress Indicators -->
+        <div class="progress-dots">
+            <div class="progress-dot"></div>
+            <div class="progress-dot active"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-card">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h1 class="text-center mb-md">Tell Us About Yourself</h1>
+                <p class="text-center text-muted mb-xl">
+                    <em>We'll personalize your interview based on your profile</em>
+                </p>
+
+                <!-- Profile Form -->
+                <form id="profileForm">
+                    <!-- Name -->
+                    <div class="form-group">
+                        <label for="name" class="form-label">Full Name *</label>
+                        <input type="text" id="name" name="name" class="form-input" placeholder="John Doe" required>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address *</label>
+                        <input type="email" id="email" name="email" class="form-input"
+                            placeholder="john.doe@example.com" required>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="form-group">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" class="form-input" placeholder="+1 (555) 123-4567">
+                    </div>
+
+                    <!-- Target Position -->
+                    <div class="form-group">
+                        <label for="position" class="form-label">Target Position *</label>
+                        <input type="text" id="position" name="position" class="form-input"
+                            placeholder="e.g., Software Engineer, Data Scientist" required>
+                    </div>
+
+                    <!-- Resume Upload -->
+                    <div class="form-group mb-xl">
+                        <label class="form-label">Resume Upload *</label>
+                        <div class="file-upload-zone" id="fileUploadZone">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" style="margin: 0 auto; color: var(--sage-dark);">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                            </svg>
+                            <p class="mt-sm mb-sm"><strong>Drag & drop your resume here</strong></p>
+                            <p class="text-muted" style="font-size: 0.875rem;">or click to browse</p>
+                            <p class="text-muted" style="font-size: 0.875rem;">Supported formats: PDF, DOCX (Max 5MB)
+                            </p>
+                            <input type="file" id="resumeFile" accept=".pdf,.doc,.docx" hidden>
+                        </div>
+                        <div id="fileInfo" class="hidden mt-sm">
+                            <p style="color: var(--sage-dark); font-weight: 500;">
+                                ✓ <span id="fileName"></span> (<span id="fileSize"></span>)
+                            </p>
+                        </div>
+                        <p class="text-error hidden" id="fileError"></p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex-center" style="gap: var(--spacing-md);">
+                        <button type="button" class="btn btn-secondary" id="backBtn">
+                            ← Back
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="continueBtn">
+                            Continue to Permissions →
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load API Helper -->
+    <script src="api.js"></script>
+
+    <script>
+        // File upload handling
+        const fileUploadZone = document.getElementById('fileUploadZone');
+        const resumeFileInput = document.getElementById('resumeFile');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const fileError = document.getElementById('fileError');
+        const continueBtn = document.getElementById('continueBtn');
+        let uploadedFile = null;
+
+        // Click to browse
+        fileUploadZone.addEventListener('click', () => {
+            resumeFileInput.click();
+        });
+
+        // Drag and drop
+        fileUploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadZone.classList.add('dragover');
+        });
+
+        fileUploadZone.addEventListener('dragleave', () => {
+            fileUploadZone.classList.remove('dragover');
+        });
+
+        fileUploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        resumeFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            fileError.classList.add('hidden');
+
+            // Validate file type
+            const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            if (!validTypes.includes(file.type)) {
+                fileError.textContent = 'Invalid file type. Please upload PDF or DOCX.';
+                fileError.classList.remove('hidden');
+                return;
+            }
+
+            // Validate file size (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                fileError.textContent = 'File size exceeds 5MB. Please upload a smaller file.';
+                fileError.classList.remove('hidden');
+                return;
+            }
+
+            // Display file info
+            uploadedFile = file;
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileInfo.classList.remove('hidden');
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        // Form submission with backend integration
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Validate resume upload
+            if (!uploadedFile) {
+                fileError.textContent = 'Please upload your resume to continue.';
+                fileError.classList.remove('hidden');
+                return;
+            }
+
+            // Disable button and show loading
+            continueBtn.disabled = true;
+            continueBtn.textContent = 'Creating profile...';
+
+            try {
+                // Step 1: Create candidate profile
+                const profileData = {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value || '+0000000000',
+                    target_position: document.getElementById('position').value
+                };
+
+                const profileResult = await api.createProfile(profileData);
+                const candidateId = profileResult.candidate_id;
+
+                console.log('Profile created:', candidateId);
+
+                // Step 2: Upload resume
+                continueBtn.textContent = 'Uploading resume...';
+                const resumeResult = await api.uploadResume(candidateId, uploadedFile);
+
+                console.log('Resume uploaded:', resumeResult);
+
+                // Step 3: Store candidate ID in sessionStorage
+                sessionStorage.setItem('candidate_id', candidateId);
+                sessionStorage.setItem('candidateProfile', JSON.stringify({
+                    ...profileData,
+                    parsed_data: resumeResult.parsed_data
+                }));
+
+                // Step 4: Navigate to permissions page
+                window.location.href = '/static/permissions.html';
+
+            } catch (error) {
+                console.error('Error:', error);
+
+                // Show error message
+                if (error.message.includes('Failed to fetch')) {
+                    fileError.textContent = 'Backend server is not running. Please start the server and try again.';
+                } else {
+                    fileError.textContent = `Error: ${error.message}`;
+                }
+                fileError.classList.remove('hidden');
+
+                // Re-enable button
+                continueBtn.disabled = false;
+                continueBtn.textContent = 'Continue to Permissions →';
+            }
+        });
+
+        // Back button
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.location.href = '/static/guidelines.html';
+        });
+    </script>
+</body>
+
+</html>

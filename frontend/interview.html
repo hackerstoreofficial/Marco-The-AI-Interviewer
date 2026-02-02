@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Marco AI Interview - Live Interview">
+    <title>Live Interview | Marco AI Interview</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="page-wrapper interview-page">
+        <!-- Progress Indicators -->
+        <div class="progress-dots">
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot active"></div>
+            <div class="progress-dot"></div>
+        </div>
+
+        <!-- Main Interview Interface -->
+        <div class="content-card" style="padding: var(--spacing-md);">
+            <!-- Header with Timer and Controls -->
+            <div class="interview-header mb-lg">
+                <div class="timer-section">
+                    <div class="timer-icon">⏱️</div>
+                    <div class="timer-display">
+                        <span id="timerMinutes">30</span>:<span id="timerSeconds">00</span>
+                    </div>
+                </div>
+
+                <div class="violation-tracker">
+                    <div class="violation-item">
+                        <span>👁️ Gaze: </span>
+                        <span id="gazeCount">0</span>/5
+                    </div>
+                    <div class="violation-item">
+                        <span>🔄 Tabs: </span>
+                        <span id="tabCount">0</span>/2
+                    </div>
+                </div>
+
+                <button class="btn btn-danger btn-sm" id="endInterviewBtn">
+                    End Interview
+                </button>
+            </div>
+
+            <!-- Side-by-side Layout: Camera and Question Panel -->
+            <div class="interview-grid">
+                <!-- Left: Video Feed (Proctoring) -->
+                <div class="video-section">
+                    <video id="videoFeed" autoplay muted></video>
+                    <div class="video-overlay">
+                        <div class="proctoring-status" id="proctoringStatus">
+                            <span class="status-indicator active"></span>
+                            Proctoring Active
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Question and Answer Panel -->
+                <div class="question-answer-panel">
+                    <!-- Question Display -->
+                    <div class="question-section mb-lg">
+                        <div class="question-header mb-sm">
+                            <h3>Question <span id="questionNumber">1</span></h3>
+                            <button class="btn-icon" id="speakQuestionBtn" title="Speak question aloud">
+                                🔊
+                            </button>
+                        </div>
+                        <div class="question-text" id="questionText">
+                            <p class="breathe-animation">Preparing your first question...</p>
+                        </div>
+                    </div>
+
+                    <!-- Answer Section -->
+                    <div class="answer-section">
+                        <div class="answer-controls mb-sm">
+                            <button class="btn btn-primary" id="recordBtn">
+                                🎤 Start Recording
+                            </button>
+                            <button class="btn btn-secondary hidden" id="stopRecordBtn">
+                                ⏹️ Stop Recording
+                            </button>
+                            <span class="recording-indicator hidden" id="recordingIndicator">
+                                <span class="pulse-dot"></span> Recording...
+                            </span>
+                        </div>
+
+                        <!-- Live Transcript -->
+                        <div class="transcript-box">
+                            <p class="text-muted" id="transcriptPlaceholder">Your answer will appear here as you
+                                speak...</p>
+                            <p id="liveTranscript" class="hidden"></p>
+                        </div>
+
+                        <!-- Submit Answer -->
+                        <div class="flex-center mt-md">
+                            <button class="btn btn-primary" id="submitAnswerBtn" disabled>
+                                Submit Answer & Continue →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load API Helper and Interview Backend Integration -->
+    <script src="api.js?v=7.0"></script>
+    <script src="interview_backend.js?v=7.0"></script>
+    <script src="whisper_stt.js?v=7.0"></script>
+
+    <style>
+        .interview-page {
+            padding: var(--spacing-md);
+        }
+
+        .interview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--sage-medium);
+        }
+
+        .timer-section {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .timer-icon {
+            font-size: 1.5rem;
+        }
+
+        .timer-display {
+            font-family: var(--font-sans);
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--slate-text);
+        }
+
+        .violation-tracker {
+            display: flex;
+            gap: var(--spacing-md);
+            font-size: 0.95rem;
+        }
+
+        .violation-item {
+            padding: 0.5rem 1rem;
+            background: var(--sage-light);
+            border-radius: var(--radius-pill);
+        }
+
+        /* Side-by-side grid layout */
+        .interview-grid {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        @media (max-width: 1024px) {
+            .interview-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .video-section {
+            position: relative;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            background: var(--slate-text);
+            height: fit-content;
+            position: sticky;
+            top: var(--spacing-md);
+        }
+
+        #videoFeed {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .question-answer-panel {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: var(--spacing-sm);
+        }
+
+        .proctoring-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-pill);
+            font-size: 0.875rem;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--soft-red);
+        }
+
+        .status-indicator.active {
+            background: #4ade80;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .question-section {
+            background: var(--sage-light);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-icon {
+            background: var(--white);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-icon:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .answer-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .recording-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--soft-red);
+            font-weight: 500;
+        }
+
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--soft-red);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .transcript-box {
+            background: var(--white);
+            border: 1px solid var(--sage-medium);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            min-height: 120px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+    </style>
+</body>
+
+</html>
