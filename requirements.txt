@@ -15,3 +15,9 @@ anthropic
 pypdf
 pyttsx3
 openai-whisper
+pydantic-settings
+aiosqlite
+email-validator
+pdfplumber
+python-docx
+easyocr
