@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+cryptography
+requests
+aiofiles
+python-multipart
+opencv-python
+dlib
+numpy
+google-generativeai
+openai
+groq
+anthropic
+pypdf
+pyttsx3
+openai-whisper
